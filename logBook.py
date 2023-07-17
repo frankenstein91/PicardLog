@@ -4,7 +4,25 @@
 import multiprocessing
 import argparse, logging
 import sqlalchemy
+import sqlalchemy.orm
+from sqlalchemy import Column, Integer, String, ForeignKey
 from nicegui import ui
+
+Base = sqlalchemy.orm.declarative_base()
+# define the table for countries with the capital and the continent
+class Country(Base):
+    __tablename__ = "countries"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    capital = Column(String)
+    continent = Column(String)
+
+# define the table for the HAM radio prefixes
+class Prefix(Base):
+    __tablename__ = "prefixes"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    prefix = Column(String)
+    country_id = Column(Integer, ForeignKey("countries.id"))
 
 
 def main():
@@ -33,6 +51,10 @@ def main():
         logging.debug("{}: {}".format(arg, getattr(args, arg)))
     # log the start of the program
     logging.info("start of the program")
+    # connect to the database and create the tables if not exists
+    engine = sqlalchemy.create_engine(args.database)
+    Base.metadata.create_all(engine)
+
 
 
 if __name__ in {"__main__", "__mp_main__"}:
