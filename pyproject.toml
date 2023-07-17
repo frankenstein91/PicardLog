@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "picardlog"
+version = "0.0.1"
+description = "This software shall become my logbook for amateur radio"
+authors = ["Your Name <you@example.com>"]
+license = "GNU GENERAL PUBLIC LICENSE Version 3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
