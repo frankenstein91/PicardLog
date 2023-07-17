@@ -67,9 +67,6 @@ class Contact(Base):
         if aurora:
             self.signal_report_T = -1
         return aurora
-
-
-
     # add a boolean for received QSL card
     qsl_received = Column(sqlalchemy.Boolean)
     # add a boolean for sent QSL card
