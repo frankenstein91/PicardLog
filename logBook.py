@@ -5,6 +5,7 @@ import multiprocessing
 import argparse, logging
 import sqlalchemy,sqlalchemy_utils
 import sqlalchemy.orm
+from sqlalchemy.orm import validates
 
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Bundle
@@ -34,6 +35,48 @@ class Station(Base):
     prefix_id = Column(Integer, ForeignKey("prefixes.id"))
     number = Column(Integer)
     suffix = Column(String)
+
+# define the table for the HAM radio modes
+class Mode(Base):
+    __tablename__ = "modes"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    mode = Column(String)
+
+# define the table for the HAM radio contacts
+class Contact(Base):
+    __tablename__ = "contacts"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    station_id = Column(Integer, ForeignKey("stations.id"))
+    # add the date and time in UTC
+    date = Column(sqlalchemy.DateTime(timezone=True))
+    # add the frequency in MHz
+    frequency = Column(sqlalchemy.Float)
+    # add the mode
+    mode_id = Column(Integer, ForeignKey("modes.id"))
+    # add the signal report Readability ensure that the value is between 1 and 5
+    signal_report_R = Column(Integer, sqlalchemy.CheckConstraint("signal_report_R BETWEEN 1 AND 5"))
+    # add the signal report Strength ensure that the value is between 1 and 9
+    signal_report_S = Column(Integer, sqlalchemy.CheckConstraint("signal_report_S BETWEEN 1 AND 9"))
+    # add the signal report Tone ensure that the value is between 1 and 9 or -1 for not used do not use 0
+    signal_report_T = Column(Integer, sqlalchemy.CheckConstraint("signal_report_T BETWEEN -1 AND 9 AND signal_report_T != 0"))
+    # add a boolean for Aurora
+    aurora = Column(sqlalchemy.Boolean)
+    # ensure that the signal_report_T is -1 if aurora is true
+    @validates("aurora")
+    def validate_aurora(self, key, aurora):
+        if aurora:
+            self.signal_report_T = -1
+        return aurora
+
+
+
+    # add a boolean for received QSL card
+    qsl_received = Column(sqlalchemy.Boolean)
+    # add a boolean for sent QSL card
+    qsl_sent = Column(sqlalchemy.Boolean)
+    # add a boolean for other requested QSL card
+    qsl_requested = Column(sqlalchemy.Boolean)
+    
 
 
 def main():
