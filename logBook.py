@@ -3,9 +3,11 @@
 
 import multiprocessing
 import argparse, logging
-import sqlalchemy
+import sqlalchemy,sqlalchemy_utils
 import sqlalchemy.orm
+
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import Bundle
 from nicegui import ui
 
 Base = sqlalchemy.orm.declarative_base()
@@ -23,6 +25,15 @@ class Prefix(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     prefix = Column(String)
     country_id = Column(Integer, ForeignKey("countries.id"))
+
+
+# define the table for the HAM radio stations
+class Station(Base):
+    __tablename__ = "stations"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    prefix_id = Column(Integer, ForeignKey("prefixes.id"))
+    number = Column(Integer)
+    suffix = Column(String)
 
 
 def main():
