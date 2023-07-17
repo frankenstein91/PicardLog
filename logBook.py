@@ -16,6 +16,10 @@ def main():
     logging_group.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     # add a argument for logging file
     logging_group.add_argument("-l", "--log", type=str, default="logbook.log", help="log file")
+    # add a argument group for the database connection
+    database_group = parser.add_argument_group("database")
+    # add a argument for the database connection string default is sqlite in the current directory
+    database_group.add_argument("-d", "--database", type=str, default="sqlite:///logbook.db", help="database connection string (default: sqlite:///logbook.db)")
     # parse the arguments
     args = parser.parse_args()
     # initialize the logging and set the logging level
