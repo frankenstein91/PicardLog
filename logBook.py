@@ -73,7 +73,17 @@ class Contact(Base):
     qsl_sent = Column(sqlalchemy.Boolean)
     # add a boolean for other requested QSL card
     qsl_requested = Column(sqlalchemy.Boolean)
-    
+    # add a text field for comments
+    comment = Column(sqlalchemy.Text)
+    last_modified = Column(sqlalchemy.DateTime(timezone=True), onupdate=sqlalchemy.func.now())  # auto update the last modified date and time
+
+def get_free_TCP_port():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
 
 
 def main():
@@ -105,8 +115,19 @@ def main():
     # connect to the database and create the tables if not exists
     engine = sqlalchemy.create_engine(args.database)
     Base.metadata.create_all(engine)
+    # create the session
+    global Sessions
+    Sessions = sqlalchemy.orm.sessionmaker(bind=engine)
+    
+       
+    # start the UI in native mode without auto reload
+    # ToDO: native mode does not work
+    ui.run(reload=False, native=False,dark=True, title="Picard's logbook", port=get_free_TCP_port())
 
-
+@ui.page('/')
+async def index():
+    with ui.header(elevated=True).style("background-color: black; color: white;").classes("items-center justify-between"):
+        ui.label("Picard's logbook").style("font-size: 2em;")
 
 if __name__ in {"__main__", "__mp_main__"}:
     multiprocessing.freeze_support()
