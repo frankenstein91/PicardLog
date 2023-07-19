@@ -133,7 +133,7 @@ class GPSException(Exception):
     def __init__(self, message = "GPS exception"):
         self.message = message
         super().__init__(self.message)
-
+import gps
 class gpshelper:
     def __init__(self, host="127.0.0.1", port=2947):
         self.host = host
