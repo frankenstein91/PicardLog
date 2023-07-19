@@ -133,6 +133,7 @@ class GPSException(Exception):
     def __init__(self, message = "GPS exception"):
         self.message = message
         super().__init__(self.message)
+
 import gps
 class gpshelper:
     def __init__(self, host="127.0.0.1", port=2947):
@@ -164,6 +165,4 @@ class gpshelper:
 
 if __name__ in {"__main__", "__mp_main__"}:
     multiprocessing.freeze_support()
-    mygps = gpshelper()
-    mygps.check_running()
     main()
