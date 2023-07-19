@@ -10,6 +10,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Bundle
 from nicegui import ui
+from interruptingcow import timeout
 
 Base = sqlalchemy.orm.declarative_base()
 # define the table for countries with the capital and the continent
@@ -145,6 +146,7 @@ class gpshelper:
     def connect(self):
         try:
             self.gpsd = gps.gps(host=self.host, port=self.port)
+            self.gpsd.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         except:
             raise GPSException("can not connect to GPSD")
     
@@ -161,8 +163,20 @@ class gpshelper:
             self.disconnect()
         except:
             self.running = False
-
-
+        return self.running
+    
+    def get_status(self):
+        self.connect()
+        status = self.gpsd.status
+        self.disconnect()
+        # translate the status to a human readable string
+        if status == -1:
+            status = "no fix"
+        elif status == gps.STATUS_RTK_FIX:
+            status = "RTK fix"
+        return status
+    
 if __name__ in {"__main__", "__mp_main__"}:
     multiprocessing.freeze_support()
+
     main()
