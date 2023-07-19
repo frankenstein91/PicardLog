@@ -129,6 +129,39 @@ async def index():
     with ui.header(elevated=True).style("background-color: black; color: white;").classes("items-center justify-between"):
         ui.label("Picard's logbook").style("font-size: 2em;")
 
+class GPSException(Exception):
+    def __init__(self, message = "GPS exception"):
+        self.message = message
+        super().__init__(self.message)
+
+class gpshelper:
+    def __init__(self, host="127.0.0.1", port=2947):
+        self.host = host
+        self.port = port
+        self.gpsd = None
+        self.running = False
+    
+    def connect(self):
+        try:
+            self.gpsd = gps.gps(host=self.host, port=self.port)
+        except:
+            raise GPSException("can not connect to GPSD")
+    
+    def disconnect(self):
+        try:
+            self.gpsd.close()
+        except:
+            raise GPSException("can not disconnect from GPSD")
+    
+    def check_running(self):
+        try:
+            self.connect()
+            self.running = True
+            self.disconnect()
+        except:
+            self.running = False
+
+
 if __name__ in {"__main__", "__mp_main__"}:
     multiprocessing.freeze_support()
     main()
