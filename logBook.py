@@ -164,6 +164,6 @@ class gpshelper:
 
 if __name__ in {"__main__", "__mp_main__"}:
     multiprocessing.freeze_support()
-    gps = gpshelper()
-    gps.check_running()
+    mygps = gpshelper()
+    mygps.check_running()
     main()
